@@ -114,6 +114,8 @@ Adapter 应当：
 5. Runtime 接受正确会话后返回退出码 `0`；
 6. 临时失败返回非零退出码并在 stderr 写简短、无敏感信息的原因。
 
+现成的 Adapter 见 [`examples/`](examples/README.md)：终端窗口版（tmux，给 Claude Code / Codex 这类 CLI 代理）和自建前端版（webhook，给自己写的网页 / App）。两个都按 reason 渲染，改前缀改样式只动 `examples/render.mjs`。
+
 ## Webhook 模式
 
 自建前端的后端、手机服务或远端 Agent 可以直接接收 HTTPS POST。Bridge 会发送同一个信封，并附带：
@@ -124,7 +126,7 @@ X-Xinchao-Delivery-Id: 01J...
 Authorization: Bearer <独立 Webhook Token>   # 配置时才发送
 ```
 
-接收端只有在正确会话已经接受消息后，才返回：
+普通网页 / App 的后端照 [`examples/webhook-frontend-server.mjs`](examples/webhook-frontend-server.mjs) 的四步写（校验 → 幂等 → 入库 → 严格 ACK），不是 Node 也一样。接收端只有在正确会话已经接受消息后，才返回：
 
 ```json
 {"accepted":true,"deliveryId":"01J..."}
