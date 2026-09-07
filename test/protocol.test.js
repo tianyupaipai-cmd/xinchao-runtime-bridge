@@ -47,3 +47,18 @@ test('rejects autonomous AI content because the bridge is user-interaction only'
     message: 'This must remain in Xinchao until the user chooses to respond.',
   }), /user-originated interactions only/);
 });
+
+test('self_signal is rejected by default and accepted only when opted in', () => {
+  const envelope = {
+    protocol: RUNTIME_PROTOCOL,
+    deliveryId: 'delivery-333',
+    reason: 'self_signal',
+    message: '刚才心里那股劲冲到顶了，想找她。',
+  };
+  assert.throws(() => parseRuntimeEnvelope(envelope), /XINCHAO_BRIDGE_ACCEPT_SELF_SIGNALS/);
+  assert.throws(() => parseRuntimeEnvelope(envelope, null, { acceptSelfSignals: false }), /self_signal/);
+  const parsed = parseRuntimeEnvelope(envelope, 'delivery-333', { acceptSelfSignals: true });
+  assert.equal(parsed.reason, 'self_signal');
+  // 开关不放行别的自主内容
+  assert.throws(() => parseRuntimeEnvelope({ ...envelope, reason: 'dream_residue' }, null, { acceptSelfSignals: true }), /user-originated interactions only/);
+});

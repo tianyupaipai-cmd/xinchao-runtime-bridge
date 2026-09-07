@@ -78,7 +78,9 @@ export class BridgeClient {
       signal,
     });
     if (!response.ok) throw new Error(`delivery fetch rejected with HTTP ${response.status}`);
-    return parseRuntimeEnvelope(await readJson(response, 'delivery fetch'), deliveryId);
+    return parseRuntimeEnvelope(await readJson(response, 'delivery fetch'), deliveryId, {
+      acceptSelfSignals: this.config.acceptSelfSignals === true,
+    });
   }
 
   async acknowledge(deliveryId, signal) {

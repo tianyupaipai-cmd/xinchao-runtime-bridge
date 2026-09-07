@@ -9,6 +9,11 @@ export const USER_INTERACTION_REASONS = Object.freeze([
   // 用户在网页提交的问题反馈——同样由用户主动发起，允许注入窗口。
   'user_feedback',
 ]);
+// 心潮念 3.3 起，服务端可以把"他自己的信号"（驱力冲顶、情绪转折、挂念、醒来余韵、觉察、黑匣子到点）
+// 也走这条桥（服务端 BRIDGE_SELF_SIGNALS 打开时才入队）。这不是用户发起的，所以桥默认仍然拒收；
+// 只有部署者显式打开 XINCHAO_BRIDGE_ACCEPT_SELF_SIGNALS 才放行——这就是"实时动态版"和"官方客户端版"的分界。
+export const SELF_SIGNAL_REASON = 'self_signal';
+export const ALL_REASONS = Object.freeze([...USER_INTERACTION_REASONS, SELF_SIGNAL_REASON]);
 
 const DELIVERY_ID = /^[A-Za-z0-9][A-Za-z0-9._:-]{5,159}$/;
 
@@ -39,7 +44,7 @@ export function parseStreamEvent(event) {
   return Object.freeze({ kind: 'delivery', deliveryId: payload.deliveryId });
 }
 
-export function parseRuntimeEnvelope(value, expectedDeliveryId = null) {
+export function parseRuntimeEnvelope(value, expectedDeliveryId = null, { acceptSelfSignals = false } = {}) {
   if (!record(value) || value.protocol !== RUNTIME_PROTOCOL) {
     throw new Error('unsupported runtime envelope protocol');
   }
@@ -58,7 +63,13 @@ export function parseRuntimeEnvelope(value, expectedDeliveryId = null) {
     throw new Error('invalid runtime reason');
   }
   if (!USER_INTERACTION_REASONS.includes(value.reason)) {
-    throw new Error('runtime bridge accepts user-originated interactions only');
+    if (value.reason === SELF_SIGNAL_REASON && acceptSelfSignals) {
+      // 放行；接收端按 reason 区分渲染（见 README「按 reason 渲染」）
+    } else if (value.reason === SELF_SIGNAL_REASON) {
+      throw new Error('runtime bridge rejects self_signal unless XINCHAO_BRIDGE_ACCEPT_SELF_SIGNALS=true');
+    } else {
+      throw new Error('runtime bridge accepts user-originated interactions only');
+    }
   }
   if (
     typeof value.message !== 'string' ||

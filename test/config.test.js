@@ -43,3 +43,10 @@ test('rejects insecure remote URLs and short tokens', () => {
   assert.throws(() => loadConfig({ ...BASE, XINCHAO_BRIDGE_MACHINE_TOKEN: 'short' }), /too short/);
   assert.throws(() => loadConfig({ ...BASE, XINCHAO_BRIDGE_INJECTOR_MODE: 'webhook', XINCHAO_BRIDGE_WEBHOOK_URL: 'http://example.com' }), /HTTPS/);
 });
+
+test('self signals are opt-in', () => {
+  assert.equal(loadConfig(BASE).acceptSelfSignals, false);
+  assert.equal(loadConfig({ ...BASE, XINCHAO_BRIDGE_ACCEPT_SELF_SIGNALS: 'true' }).acceptSelfSignals, true);
+  assert.equal(loadConfig({ ...BASE, XINCHAO_BRIDGE_ACCEPT_SELF_SIGNALS: 'off' }).acceptSelfSignals, false);
+  assert.throws(() => loadConfig({ ...BASE, XINCHAO_BRIDGE_ACCEPT_SELF_SIGNALS: 'maybe' }), /true or false/);
+});

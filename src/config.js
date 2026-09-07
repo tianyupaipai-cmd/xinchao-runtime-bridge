@@ -2,6 +2,16 @@ import { isAbsolute } from 'node:path';
 
 const LEVELS = new Set(['debug', 'info', 'warn', 'error']);
 const INJECTOR_MODES = new Set(['process', 'webhook']);
+const TRUE_WORDS = new Set(['1', 'true', 'yes', 'on']);
+const FALSE_WORDS = new Set(['', '0', 'false', 'no', 'off']);
+
+function flag(env, key, fallback = false) {
+  const raw = String(env[key] ?? '').trim().toLowerCase();
+  if (raw === '') return fallback;
+  if (TRUE_WORDS.has(raw)) return true;
+  if (FALSE_WORDS.has(raw)) return false;
+  throw new Error(`${key} must be true or false`);
+}
 
 function required(env, key) {
   const value = String(env[key] ?? '').trim();
@@ -93,9 +103,13 @@ export function loadConfig(env = process.env, { requireInjector = true } = {}) {
   const logLevel = String(env.XINCHAO_BRIDGE_LOG_LEVEL ?? 'info').trim().toLowerCase();
   if (!LEVELS.has(logLevel)) throw new Error('XINCHAO_BRIDGE_LOG_LEVEL is invalid');
 
+  // 实时动态版开关：放行心潮念自己的信号（reason=self_signal）。默认关：桥只搬用户发起的东西。
+  const acceptSelfSignals = flag(env, 'XINCHAO_BRIDGE_ACCEPT_SELF_SIGNALS', false);
+
   return Object.freeze({
     baseUrl,
     machineToken,
+    acceptSelfSignals,
     injector: Object.freeze({
       mode: injectorMode,
       executable: executable || null,
