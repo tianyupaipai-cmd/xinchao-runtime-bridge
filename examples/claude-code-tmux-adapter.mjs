@@ -5,7 +5,7 @@
 // 送进指定的 tmux 窗口，成功退出码 0，失败非零并在 stderr 留一句短原因（不含正文）。
 //
 // 环境变量：
-//   XINCHAO_ADAPTER_TMUX_TARGET   tmux 目标，如 "guchuan" 或 "main:1"（必填）
+//   XINCHAO_ADAPTER_TMUX_TARGET   tmux 目标，如 "claude" 或 "main:1"（必填）
 //   XINCHAO_ADAPTER_CABIN_NAME    用户发起消息的前缀名，默认 小屋桥
 //   XINCHAO_ADAPTER_STATE_DIR     幂等记录目录，默认 ~/.xinchao-adapter
 //

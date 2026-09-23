@@ -10,7 +10,7 @@
 # 环境变量同 hooks/xinchao-now-hook.sh（默认读 ~/.xinchao-hook.env）：XINCHAO_URL、XINCHAO_TOKEN
 # 正文只走这一跳：心潮念判完即删，不进状态、不进审计；本脚本只落一个时间戳文件（节流用），不落正文。
 #
-# 节流（和 PaiHome 线上一样的三道闸；心潮念那头一天只结算 24 次，一场长聊一小时就能用光，所以钩子先挡）：
+# 节流（三道闸；心潮念那头一天只结算 24 次，一场长聊一小时就能用光，所以钩子先挡）：
 #   - 她隔了 XINCHAO_TAG_ARRIVAL_MIN（默认 45）分钟以上再开口的第一句永远发——那是"她来了"，陪伴本身
 #   - 两次发送之间至少隔 XINCHAO_TAG_GAP_MIN（默认 8）分钟
 #   - 每小时最多 XINCHAO_TAG_HOURLY_MAX（默认 4）次

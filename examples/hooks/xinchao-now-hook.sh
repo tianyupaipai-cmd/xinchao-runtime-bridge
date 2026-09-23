@@ -14,7 +14,7 @@
 #   XINCHAO_TOKEN        心潮念的 DYNAMIC_MIND_TOKEN（同 MCP 用的那个）
 #   XINCHAO_HOOK_STATE   状态目录，默认 /tmp/xinchao-hook
 #   XINCHAO_HOOK_PREFIX  以这个字符开头的消息不算"她来了"（桥递进来的话），默认 【
-# 节流规则（和 PaiHome 用的一样）：
+# 节流规则：
 #   - 块内容没变且 30 分钟内附过 → 不附；
 #   - 她隔 90 分钟以上再来的第一条 → 必附；
 #   - 心潮念自检 ok=false、块超 8 行 / 400 字、混进数字或英文键名 → 不附（硬门，防后端算坏了带坏他）；
